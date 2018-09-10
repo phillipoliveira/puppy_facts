@@ -1,0 +1,6 @@
+slackclient
+json
+os
+glob
+flask
+pymongo==3.7.1
