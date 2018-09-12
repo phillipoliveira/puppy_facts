@@ -1,5 +1,5 @@
 from slackclient import SlackClient
-from src.models.database import Database
+from src.commons.database import Database
 import getpass
 
 
@@ -53,40 +53,39 @@ class SlackCommands(object):
         return None
 
     def print_channels(self):
-        if __name__ == '__main__':
-            channels = self.list_channels()
-            if channels:
-                print("Channels: ")
-                for c in channels:
-                    print(c['name'] + " (" + c['id'] + ")")
-                    detailed_info = self.channel_info(c['id'])
-                    if detailed_info['purpose']['value']:
-                        try:
-                            print("\t"+(detailed_info['purpose']['value']))
-                        except:
-                            continue
-            else:
-                print("Unable to authenticate.")
+        channels = self.list_channels()
+        if channels:
+            print("Channels: ")
+            for c in channels:
+                print(c['name'] + " (" + c['id'] + ")")
+                detailed_info = self.channel_info(c['id'])
+                if detailed_info['purpose']['value']:
+                    try:
+                        print("\t"+(detailed_info['purpose']['value']))
+                    except:
+                        continue
+        else:
+            print("Unable to authenticate.")
 
     def print_groups(self):
-        if __name__ == '__main__':
-            groups = self.list_groups()
-            if groups:
-                print("Groups: ")
-                for g in groups:
-                    print(g['name'] + " (" + g['id'] + ")")
-            else:
-                print("Unable to authenticate.")
+        groups = self.list_groups()
+        if groups:
+            print("Groups: ")
+            for g in groups:
+                print(g['name'] + " (" + g['id'] + ")")
+        else:
+            print("Unable to authenticate.")
 
-    def send_message(self, channel_id, message, attachment):
+    def send_message(self, user, channel, fact, selected_attachment):
         response = (self.slack_client.api_call(
             "chat.postMessage",
-            channel=channel_id,
-            text=message,
+            channel=channel.slack_channel_id,
+            text=fact.fact_text,
             username='Puppy Facts Bot (and sometimes horses and cats)',
             icon_emoji=':dog:',
-            attachments=attachment
+            attachments=selected_attachment
         ))
+        user.add_to_send_count()
         return response
 
     def delete_message(self, channel_id, ts):
@@ -144,8 +143,6 @@ class SlackCommands(object):
         ]
         return attachment
 
-slack_commands = SlackCommands()
-slack_commands.authenticate_slack()
 
 # Deleting a message:
 # delete_message('C0JS385LP', '1535982927.000100')

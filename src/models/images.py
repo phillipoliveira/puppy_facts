@@ -1,6 +1,6 @@
 import uuid
 import random
-from src.models.database import Database
+from src.commons.database import Database
 
 
 class Images(object):
@@ -37,3 +37,34 @@ class Images(object):
             "image_url": self.image_url,
             "ts": self.ts
         }
+
+    def update_image_data(self, update):
+        database = Database()
+        database.initialize()
+        database.update("images", {"_id": self._id}, update)
+
+    @classmethod
+    def remove_image_data(cls, owner):
+        images = cls.find_images(query=({"owner": owner}))
+        for image in images:
+            database = Database()
+            database.initialize()
+            database.remove("images", image.json())
+
+    @staticmethod
+    def get_image_count(user):
+        images = Images.find_images({"owner": user.instatag})
+        image_count = len(images)
+        return image_count
+
+# mass updating images
+# images = Images.find_images(query=({"owner": "balzner"}))
+# for image in images:
+#    image.update_image_data(update=({
+#                                         "_id" : image._id,
+#                                         "owner" : image.owner,
+#                                         "associated_fact_type" : "horse_fact",
+#                                         "image_url" : image.image_url,
+#                                         "ts" : image.ts
+#                                     }))
+

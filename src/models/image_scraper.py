@@ -1,5 +1,5 @@
 from instagram_scraper import InstagramScraper
-from src.models.database import Database
+from src.commons.database import Database
 from src.models.images import Images
 import getpass
 
@@ -25,7 +25,8 @@ class ImageScraper(object):
                     img['tags']
                 except KeyError:
                     img['tags'] = []
-                if user.hashtag is None or all([(user.hashtag is not None), (user.hashtag in img['tags'])]):
+                if user.hashtag is None or all([(user.hashtag is not None),
+                                                (user.hashtag in [x.lower() for x in img['tags']])]):
                     for url in img['urls']:
                         image = Images(owner=user.instatag,
                                        image_url=url,
@@ -52,7 +53,7 @@ class ImageScraper(object):
                 password = getpass.getpass("Please enter your instagram password:")
                 instagram_session = InstagramScraper(login_user=username, login_pass=password,
                                                      usernames=[user.instatag], media_types=['image'],
-                                                     media_metadata=True, download_files=False)
+                                                     media_metadata=True, download_files=False,)
             database.insert("instagram_login", ({"username": username, "password": password}))
         else:
             username = instagram_login_object['username']

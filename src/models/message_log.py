@@ -1,13 +1,11 @@
-from src.models.database import Database
+from src.commons.database import Database
 import uuid
-import ast
 
 
 class MessageLog(object):
     def __init__(self, channel, ts, text, image_url, _id=None):
         self.channel = channel
         self.ts = ts
-        self.body = body
         self.text = text
         self.image_url = image_url
         self._id = uuid.uuid4().hex if _id is None else _id
@@ -22,23 +20,9 @@ class MessageLog(object):
             "_id": self._id,
             "channel": self.channel,
             "ts": self.ts,
-            "body": self.body
+            "text": self.text,
+            "image_url": self.image_url
         }
-
-    @staticmethod
-    def migrate_message_log():
-        message_log = "/Users/phillipoliveria/PycharmProjects/puppy_facts/src/message_log.txt"
-        database = Database()
-        database.initialize()
-        lines = open(message_log).read().splitlines()
-        for line in lines:
-            ts = line.split(", ", 2)[0]
-            channel = line.split(", ", 2)[1]
-            body = line.split(", ", 2)[2]
-            message = MessageLog(channel=channel,
-                                 ts=ts,
-                                 body=body)
-            database.insert("message_log", message.json())
 
     @classmethod
     def pull_message_log(cls):
@@ -57,5 +41,18 @@ class MessageLog(object):
                 return False
         return True
 
-print(MessageLog.used_check(fact="hi", image="hi"))
+    @classmethod
+    def log_message(cls, response):
+        try:
+            message = cls(
+                channel=response['channel'],
+                ts=response['ts'],
+                text=response['message']['text'],
+                image_url=response['message']['attachments'][0]['image_url']
+            )
+            message.add_entry()
+        except KeyError:
+            print("This response couldn't be added to the message_log: {}".format(response))
+        return
+
 

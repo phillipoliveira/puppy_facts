@@ -1,14 +1,14 @@
-from src.models.database import Database
+from src.commons.database import Database
 from src.models.image_scraper import ImageScraper
+from src.models.images import Images
 import uuid
 import random
-import time
 
 
 class Users(object):
     def __init__(self, instatag, associated_fact_type, send_count=None, hashtag=None, _id=None):
         self.instatag = instatag
-        self.associated_fact_type = self.check_associated_fact_type(associated_fact_type)
+        self.associated_fact_type = associated_fact_type
         self.hashtag = hashtag
         self.send_count = 0 if send_count is None else send_count
         self._id = uuid.uuid4().hex if _id is None else _id
@@ -20,15 +20,7 @@ class Users(object):
             database = Database()
             database.initialize()
             database.insert("users", self.json())
-
-    @staticmethod
-    def check_associated_fact_type(associated_fact_type):
-        if not any([(associated_fact_type == "puppy_fact"),
-                    (associated_fact_type == "horse_fact"),
-                    (associated_fact_type == "cat_fact")]):
-            raise LookupError("associated_fact_type must be either 'puppy_fact', 'cat_fact' or 'horse_fact'")
-        else:
-            return associated_fact_type
+            print("User successfully added")
 
     @classmethod
     def get_users(cls, query=({})):
@@ -37,6 +29,12 @@ class Users(object):
         users = database.find("users", query)
         return [cls(**user) for user in users]
 
+    @classmethod
+    def get_one_user(cls, query=({})):
+        database = Database()
+        database.initialize()
+        user = database.find_one("users", query)
+        return cls(**user)
 
     def json(self):
         return {
@@ -74,3 +72,27 @@ class Users(object):
         database.initialize()
         self.send_count += 1
         database.update("users", {"_id": self._id}, self.json())
+
+    def update_user(self, update):
+        database = Database()
+        database.initialize()
+        database.update("users", {"_id": self._id}, update)
+        print("User successfully updated")
+
+    def remove_user(self):
+        database = Database()
+        database.initialize()
+        database.remove("users", {"_id": self._id})
+        Images.remove_image_data(self.instatag)
+        print("User successfully removed")
+
+
+# Updating user database entry:
+#user = Users.get_one_user({"instatag":"coreybrendan"})
+#user.update_user({
+#	"_id" : "a892b4e3c5f543de8ebf82da93ecea72",
+#	"instatag" : "coreybrendan",
+#	"hashtag" : "rubyloz",
+#	"send_count" : 0,
+#	"associated_fact_type" : "puppy_fact"
+#})

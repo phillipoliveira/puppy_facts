@@ -1,6 +1,6 @@
 import smtplib
 from email.mime.text import MIMEText
-from src.models.database import Database
+from src.commons.database import Database
 
 
 class Emailer(object):
@@ -9,7 +9,7 @@ class Emailer(object):
         self.email_password =email_password
 
     @classmethod
-    def get_email_credentials(cls):
+    def get_email_credentials(cls, returnless=False):
         database = Database()
         database.initialize()
         emailer_credential_object = database.find_one("emailer_credentials", ({}))
@@ -24,7 +24,8 @@ class Emailer(object):
         else:
             email_address = emailer_credential_object['email_address']
             email_password = emailer_credential_object['email_password']
-        return email_address, email_password
+        if returnless is False:
+            return email_address, email_password
 
     @staticmethod
     def email_check(email, password):
@@ -44,7 +45,6 @@ class Emailer(object):
         fromx = email
         gmail_password = password
         for user in users:
-            print(user.email_address)
             to = user.email_address
             server = smtplib.SMTP('smtp.gmail.com:587')
             server.starttls()
@@ -58,3 +58,6 @@ class Emailer(object):
             msg['To'] = to
             server.sendmail(fromx, to, msg.as_string())
             server.quit()
+
+
+Emailer.get_email_credentials(returnless=False)

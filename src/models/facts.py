@@ -1,6 +1,7 @@
-from src.models.database import Database
+from src.commons.database import Database
 import uuid
 import random
+import os
 
 
 class Facts(object):
@@ -45,16 +46,16 @@ class Facts(object):
             database.insert("facts", fact.json())
             print("Fact successfully added")
 
-
     @staticmethod
     def migrate_facts():
-        fact_files = {'horse_fact': '/Users/phillipoliveria/PycharmProjects/puppy_facts/src/horse_facts.txt',
-                      'cat_fact': '/Users/phillipoliveria/PycharmProjects/puppy_facts/src/cat_facts.txt',
-                      'puppy_fact': '/Users/phillipoliveria/PycharmProjects/puppy_facts/src/puppy_facts.txt'}
+        dirpath = os.path.dirname(__file__)
+        fact_files = {'horse_fact': 'facts/horse_facts.txt',
+                      'cat_fact': 'facts/cat_facts.txt',
+                      'puppy_fact': 'facts/puppy_facts.txt'}
         database = Database()
         database.initialize()
         for k, v in fact_files.items():
-            lines = open(v).read().splitlines()
+            lines = open(os.path.join(dirpath, v)).read().splitlines()
             for line in lines:
                 if line == "":
                     continue
@@ -68,3 +69,8 @@ class Facts(object):
             "fact_type": self.fact_type,
             "fact_text": self.fact_text,
         }
+
+
+if len(Facts.get_facts()) == 0:
+    Facts.migrate_facts()
+
