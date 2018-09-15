@@ -1,5 +1,5 @@
 from slackclient import SlackClient
-from src.commons.database import Database
+from commons.database import Database
 import getpass
 
 

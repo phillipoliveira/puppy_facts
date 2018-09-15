@@ -1,6 +1,6 @@
-from src.commons.database import Database
-from src.models.image_scraper import ImageScraper
-from src.models.images import Images
+from commons.database import Database
+from models.image_scraper import ImageScraper
+from models.images import Images
 import uuid
 import random
 

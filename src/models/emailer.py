@@ -1,6 +1,6 @@
 import smtplib
 from email.mime.text import MIMEText
-from src.commons.database import Database
+from commons.database import Database
 
 
 class Emailer(object):

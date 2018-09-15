@@ -1,6 +1,6 @@
 from instagram_scraper import InstagramScraper
-from src.commons.database import Database
-from src.models.images import Images
+from commons.database import Database
+from models.images import Images
 import getpass
 
 

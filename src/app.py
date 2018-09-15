@@ -1,9 +1,9 @@
 import re
-from src.models.users import Users
-from src.models.distributors import Distributor
-from src.models.slack_commands import SlackCommands
-from src.models.facts import Facts
-from src.models.images import Images
+from models.users import Users
+from models.distributors import Distributor
+from models.slack_commands import SlackCommands
+from models.facts import Facts
+from models.images import Images
 import os
 
 
@@ -19,9 +19,26 @@ class Commands(object):
             Commands.start()
         else:
             try:
-                function_dict[response[0]](response)
+                dct = cls.function_dict()
+                dct[response[0]](response)
             except KeyError:
                 Commands.failure()
+
+    @classmethod
+    def function_dict(cls):
+        function_dict = {"add-user": cls.add_user,
+                         "view-users": cls.view_users,
+                         "update-user": cls.update_user,
+                         "remove-user": cls.remove_user,
+                         "add-email": cls.add_distributor,
+                         "add-slack": cls.add_distributor,
+                         "remove-email": cls.remove_distributor,
+                         "remove-slack": cls.remove_distributor,
+                         "view-distributors": cls.view_distributors,
+                         "print-slack-channels": cls.print_slack_channels,
+                         "print-slack-groups": cls.print_slack_groups,
+                         "migrate-facts": cls.migrate_facts}
+        return function_dict
 
     @staticmethod
     def start():
@@ -109,6 +126,17 @@ class Commands(object):
         cls.failure()
 
     @staticmethod
+    def view_distributors(response):
+        distributors_email = Distributor.get_distributors(type="email")
+        for distributor in distributors_email:
+            print(distributor.email_address)
+        distributors_slack = (Distributor.get_distributors(type="slack"))
+        for distributor in distributors_slack:
+            print(distributor.slack_channel_id)
+
+
+
+    @staticmethod
     def print_slack_channels(response):
         slack = SlackCommands()
         slack.authenticate_slack()
@@ -140,25 +168,13 @@ class Commands(object):
 
     @staticmethod
     def clean_response(response):
-        response_split = re.split(' ', response.lower())
+        response_split = re.split(' ', response)
         response_split_clean = []
         for i in response_split:
             if i.strip() != "":
                 response_split_clean.append(i)
         return response_split_clean
 
-
-function_dict ={"add-user": Commands.add_user,
-                "view-users": Commands.view_users,
-                "update-user": Commands.update_user,
-                "remove-user": Commands.remove_user,
-                "add-email": Commands.add_distributor,
-                "add-slack": Commands.add_distributor,
-                "remove-email": Commands.remove_distributor,
-                "remove-slack": Commands.remove_distributor,
-                "print-slack-channels": Commands.print_slack_channels,
-                "print-slack-groups": Commands.print_slack_groups,
-                "migrate-facts": Commands.migrate_facts}
 
 Commands.start()
 while True:

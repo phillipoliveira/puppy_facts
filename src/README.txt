@@ -29,6 +29,9 @@ add-slack <slack-channel-id>
 To remove channel that hates facts:
 remove-slack <slack-channel-id>
 
+To view all emails and slack channels being used:
+view-distributors
+
 To print all slack channels available to you:
 print-slack-channels
 
