@@ -8,36 +8,38 @@ import os
 
 
 class Commands(object):
+    def __init__(self, active=True):
+        self.active = active
 
-    @classmethod
-    def main(cls):
+    def main(self):
         raw_response = input()
         response = Commands.clean_response(raw_response)
         if len(response) == 0:
             Commands.failure()
         elif all([(len(response) == 1), (response[0].lower() == 'start')]):
-            Commands.start()
+            self.start()
         else:
             try:
-                dct = cls.function_dict()
+                print(response[0])
+                dct = self.function_dict()
                 dct[response[0]](response)
             except KeyError:
                 Commands.failure()
 
-    @classmethod
-    def function_dict(cls):
-        function_dict = {"add-user": cls.add_user,
-                         "view-users": cls.view_users,
-                         "update-user": cls.update_user,
-                         "remove-user": cls.remove_user,
-                         "add-email": cls.add_distributor,
-                         "add-slack": cls.add_distributor,
-                         "remove-email": cls.remove_distributor,
-                         "remove-slack": cls.remove_distributor,
-                         "view-distributors": cls.view_distributors,
-                         "print-slack-channels": cls.print_slack_channels,
-                         "print-slack-groups": cls.print_slack_groups,
-                         "migrate-facts": cls.migrate_facts}
+    def function_dict(self):
+        function_dict = {"exit": self.exit,
+                         "add-user": self.add_user,
+                         "view-users": self.view_users,
+                         "update-user": self.update_user,
+                         "remove-user": self.remove_user,
+                         "add-email": self.add_distributor,
+                         "add-slack": self.add_distributor,
+                         "remove-email": self.remove_distributor,
+                         "remove-slack": self.remove_distributor,
+                         "view-distributors": self.view_distributors,
+                         "print-slack-channels": self.print_slack_channels,
+                         "print-slack-groups": self.print_slack_groups,
+                         "migrate-facts": self.migrate_facts}
         return function_dict
 
     @staticmethod
@@ -45,6 +47,10 @@ class Commands(object):
         dirpath = os.path.dirname(__file__)
         file = open(os.path.join(dirpath, "README.txt")).read()
         print(file)
+
+    def exit(self, response):
+        self.active = False
+        return
 
     @staticmethod
     def view_users(response):
@@ -176,6 +182,7 @@ class Commands(object):
         return response_split_clean
 
 
-Commands.start()
-while True:
-    Commands.main()
+command = Commands()
+command.start()
+while command.active is True:
+    command.main()

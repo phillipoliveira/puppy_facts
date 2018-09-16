@@ -1,3 +1,4 @@
+models.path.append('/path/to/application/app/folder')
 from models.slack_commands import SlackCommands
 from models.emailer import Emailer
 from models.message_log import MessageLog
