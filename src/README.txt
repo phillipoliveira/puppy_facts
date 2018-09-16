@@ -37,3 +37,5 @@ print-slack-channels
 
 To print all slack groups available to you:
 print-slack-groups
+
+To exit the app, enter "exit"
