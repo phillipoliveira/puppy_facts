@@ -1,4 +1,3 @@
-models.path.append('/path/to/application/app/folder')
 from models.slack_commands import SlackCommands
 from models.emailer import Emailer
 from models.message_log import MessageLog
@@ -25,10 +24,13 @@ def cron_job():
             insta_tag=user.instatag,
             ts=image.ts
         )
-        count += 1
-        if count > 100:
-            raise LookupError("NO PUPPY FACTS AVAILABLE :(")
-        used = MessageLog.used_check(fact=fact.fact_text, image=image.image_url)
+        if image.image_url == "":
+            used = False
+        else:
+            count += 1
+            if count > 100:
+                raise LookupError("NO PUPPY FACTS AVAILABLE :(")
+            used = MessageLog.used_check(fact=fact.fact_text, image=image.image_url)
     for channel in channels:
         slack_commands = SlackCommands()
         response = slack_commands.send_message(

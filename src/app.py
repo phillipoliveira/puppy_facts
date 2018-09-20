@@ -55,7 +55,6 @@ class Commands(object):
     @staticmethod
     def view_users(response):
         users = Users.get_users(query=({}))
-        print(users)
         for user in users:
             image_count = Images.get_image_count(user)
             print("Instatag: {}".format(user.instatag))
