@@ -1,5 +1,6 @@
 import uuid
 import random
+import re
 from commons.database import Database
 
 
@@ -25,9 +26,15 @@ class Images(object):
 
     @classmethod
     def find_images_by_owner(cls, owner):
-        images = cls.find_images(query=({"owner": owner}))
-        chosen_image = random.choice(images)
-        return chosen_image
+        image = False
+        while image is False:
+            images = cls.find_images(query=({"owner": owner}))
+            chosen_image = random.choice(images)
+            if re.search(".mp4", chosen_image.image_url):
+                image = False
+            else:
+                image = True
+        return chosen_image.image_url
 
     def json(self):
         return {
@@ -67,4 +74,5 @@ class Images(object):
 #                                         "image_url" : image.image_url,
 #                                         "ts" : image.ts
 #                                     }))
+
 
