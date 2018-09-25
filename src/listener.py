@@ -17,15 +17,9 @@ def inbound():
             event_data.get("challenge"), 200, {"content_type": "application/json"}
            )
     elif "event" in event_data:
-        if re.search("help", event_data["text"]):
-            App.cron_job(slack_user=event_data["channel"])
-
-
-@app.route('/command', methods=['POST'])
-def inbound():
-    event_data = json.loads(request.data.decode('utf-8'))
-    # Echo the URL verification challenge code back to Slack
-
+        if re.search("help", event_data['event']['text']):
+            app = App()
+            app.cron_job(slack_user=event_data['event']["channel"])
 
 @app.route('/', methods=['GET'])
 def test():
@@ -34,4 +28,3 @@ def test():
 
 if __name__ == "__main__":
         app.run(host='0.0.0.0')
-

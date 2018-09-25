@@ -51,6 +51,3 @@ class App(object):
             Emailer.send_email(emails, selected_attachment, fact.fact_text)
 
 
-if __name__ == "__main__":
-    App.cron_job()
-
