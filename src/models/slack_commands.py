@@ -88,6 +88,9 @@ class SlackCommands(object):
         user.add_to_send_count()
         return response
 
+    def send_raw_message(self, channel, text):
+        self.slack_client.api_call("chat.postMessage", channel=channel, text=text)
+
     def delete_message(self, channel_id, ts):
         response = (self.slack_client.api_call(
             "chat.delete",

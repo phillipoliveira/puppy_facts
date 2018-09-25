@@ -18,8 +18,9 @@ def inbound():
            )
     elif "event" in event_data:
         if re.search("help", event_data['event']['text']):
-            app = App()
-            app.cron_job(slack_user=event_data['event']["channel"])
+            slack = SlackCommands()
+            slack.send_raw_message(channel=event_data['event']['channel'], text="yo")
+
 
 @app.route('/', methods=['GET'])
 def test():
