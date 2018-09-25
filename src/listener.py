@@ -20,7 +20,7 @@ def inbound():
         if re.search("help", event_data['event']['text']):
             slack = SlackCommands()
             slack.send_raw_message(channel=event_data['event']['channel'], text="yo")
-
+            return
 
 @app.route('/', methods=['GET'])
 def test():
