@@ -34,7 +34,7 @@ class Images(object):
                 image = False
             else:
                 image = True
-        return chosen_image.image_url
+        return chosen_image
 
     def json(self):
         return {
