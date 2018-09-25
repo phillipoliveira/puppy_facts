@@ -19,7 +19,7 @@ def inbound():
     elif "event" in event_data:
         if re.search("help", event_data['event']['text']):
             slack = SlackCommands()
-            slack.send_raw_message(channel=event_data['event']['channel'], text=json.dump(event_data))
+            slack.send_raw_message(channel=event_data['event']['channel'], text=event_data)
             return
 
 @app.route('/', methods=['GET'])
