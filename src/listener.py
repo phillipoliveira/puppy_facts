@@ -16,11 +16,12 @@ def inbound():
         return make_response(
             event_data.get("challenge"), 200, {"content_type": "application/json"}
            )
-    elif "event" in event_data:
-        if re.search("help", event_data['event']['text']):
-            slack = SlackCommands()
-            slack.send_raw_message(channel=event_data['event']['channel'], text=event_data)
-            return
+    elif all([("event" in event_data),
+              (re.search("help", event_data['event']['text'])),
+              (event_data['event']['type'] == "message")]):
+        slack = SlackCommands()
+        slack.send_raw_message(channel=event_data['event']['channel'], text=event_data)
+        return
 
 @app.route('/', methods=['GET'])
 def test():
