@@ -12,7 +12,7 @@ class SlackCommands(object):
                  auth_code=None,
                  token_expiry_time=None,
                  _id=None):
-        self.access_token = None if access_token is None else SlackClient(access_token)
+        self.access_token = None if access_token is None else access_token
         self.auth_code = None if auth_code is None else auth_code
         self.token_expiry_time = None if token_expiry_time is None else token_expiry_time
         self._id = self._id = uuid.uuid4().hex if _id is None else _id
@@ -33,9 +33,9 @@ class SlackCommands(object):
             hook = cls.get_credentials()
             auth_response = hook.get_token()
             hook.update_credentials(auth_response)
-            return auth_response['access_token']
+            return SlackClient(auth_response['access_token'])
         else:
-            return slack_token_object['access_token']
+            return SlackClient(slack_token_object['access_token'])
 
     def update_credentials(self, auth_response):
         self.access_token = auth_response['access_token']
@@ -92,19 +92,19 @@ class SlackCommands(object):
         self.access_token.api_call("auth.test")
 
     def list_channels(self):
-        channels_call = self.slack_client.api_call("channels.list")
+        channels_call = self.access_token.api_call("channels.list")
         if channels_call['ok']:
             return channels_call['channels']
         return None
 
     def list_groups(self):
-        groups_call = self.slack_client.api_call("groups.list")
+        groups_call = self.access_token.api_call("groups.list")
         if groups_call['ok']:
             return groups_call['groups']
         return None
 
     def channel_info(self, channel_id):
-        channel_info = self.slack_client.api_call("channels.info", channel=channel_id)
+        channel_info = self.access_token.api_call("channels.info", channel=channel_id)
         if channel_info:
             return channel_info['channel']
         return None
@@ -134,7 +134,7 @@ class SlackCommands(object):
             print("Unable to authenticate.")
 
     def send_message(self, user, channel, fact, selected_attachment):
-        response = (self.slack_client.api_call(
+        response = (self.access_token.api_call(
             "chat.postMessage",
             channel=channel.slack_channel_id,
             text=fact.fact_text,
