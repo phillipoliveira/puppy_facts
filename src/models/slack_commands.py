@@ -35,7 +35,7 @@ class SlackCommands(object):
             hook.update_credentials(auth_response)
             return SlackClient(auth_response['access_token'])
         else:
-            return SlackClient(slack_token_object['access_token'])
+            return SlackClient(slack_token_object.access_token)
 
     def update_credentials(self, auth_response):
         self.access_token = auth_response['access_token']
