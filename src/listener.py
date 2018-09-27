@@ -35,7 +35,7 @@ def test():
 
 
 @app.route("/begin_auth", methods=["GET"])
-def pre_install(self):
+def pre_install():
     return '''
       <a href="https://slack.com/oauth/authorize?scope={0}&client_id={1}">
           Add to Slack
@@ -44,7 +44,7 @@ def pre_install(self):
 
 
 @app.route("/finish_auth", methods=["GET", "POST"])
-def post_install(self):
+def post_install():
     if 'error' in request.args:
         return Response("It didn't work!")
     # Retrieve the auth code from the request params
