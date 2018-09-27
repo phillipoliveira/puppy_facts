@@ -54,7 +54,11 @@ def post_install():
         slack = SlackCommands()
         slack.auth_code = auth_code
         auth_response = slack.get_token()
-        slack.update_credentials(auth_response)
+        try:
+            slack.get_credentials()
+            slack.update_credentials(auth_response)
+        except TypeError:
+            slack.add_credentials()
         return Response('It worked!')
 
 

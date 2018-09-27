@@ -46,6 +46,14 @@ class SlackCommands(object):
                         query=({"_id": self._id}),
                         update=self.json())
 
+    def add_credentials(self, auth_response):
+        self.access_token = auth_response['access_token']
+        numbers = re.compile('\d+(?:\.\d+)?')
+        max_age = int(numbers.findall(auth_response['headers']['Strict-Transport-Security'])[0])
+        self.token_expiry_time = int(time.time()) + max_age
+        Database.insert(collection="slack_credentials",
+                        data=self.json())
+
     def json(self):
         return({
             "_id": self._id,
