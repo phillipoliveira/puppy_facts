@@ -51,4 +51,4 @@ class App(object):
             Emailer.send_email(emails, selected_attachment, fact.fact_text)
 
 
-
+App.cron_job(slack_user="GCPJJ4G3U")
