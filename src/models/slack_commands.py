@@ -87,7 +87,7 @@ class SlackCommands(object):
             return False
 
     def authenticate_slack(self):
-        self.access_token = self.get_slack_token()
+        self.access_token = SlackCommands.get_slack_token()
         self.access_token.api_call("api.test")
         self.access_token.api_call("auth.test")
 
