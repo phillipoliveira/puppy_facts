@@ -1,25 +1,70 @@
 from slackclient import SlackClient
 from commons.database import Database
-import getpass
+import time
+import uuid
+import os
 
 
 class SlackCommands(object):
-    def __init__(self, slack_client=None):
-        self.slack_client = SlackClient(self.get_slack_token()) if slack_client is None else slack_client
+    def __init__(self,
+                 access_token=None,
+                 auth_code=None,
+                 token_expiry_time=None,
+                 _id=None):
+        self.access_token = None if access_token is None else SlackClient(access_token)
+        self.auth_code = None if auth_code is None else auth_code
+        self.token_expiry_time = None if token_expiry_time is None else token_expiry_time
+        self._id = self._id = uuid.uuid4().hex if _id is None else _id
 
     @classmethod
     def get_slack_token(cls):
         database = Database()
         database.initialize()
-        slack_token_object = database.find_one("slack_token", ({}))
-        if slack_token_object is None:
-            slack_token = getpass.getpass("Please enter your slack token:")
-            while cls.check_slack_token(slack_token) is False:
-                slack_token = getpass.getpass("Invalid token. Please enter a valid slack token:")
-            database.insert("slack_token", ({"token": slack_token}))
+        try:
+            slack_token_object = cls.get_credentials()
+        except TypeError:
+            print("Visit http://178.128.234.3:5000/begin_auth to authorize puppy_facts")
+            raise ValueError("Slack authorization failed")
+        if slack_token_object.token_expiry_time is None:
+            print("Visit http://178.128.234.3:5000/begin_auth to authorize puppy_facts")
+            raise ValueError("Slack authorization failed")
+        elif int(slack_token_object.token_expiry_time) < int(time.time()):
+            hook = cls.get_credentials()
+            auth_response = hook.get_token()
+            hook.update_credentials(auth_response)
+            return auth_response['access_token']
         else:
-            slack_token = slack_token_object['token']
-        return slack_token
+            return slack_token_object['access_token']
+
+    def update_credentials(self, auth_response):
+        self.access_token = auth_response['access_token']
+        self.token_expiry_time = int(time.time()) + int(auth_response['max-age'])
+        Database.update(collection="slack_credentials",
+                        query=({"_id": self._id}),
+                        update=self.json())
+
+    def json(self):
+        return({
+            "_id": self._id,
+            "access_token": self.access_token,
+            "auth_code": self.auth_code,
+            "token_expiry_time": self.token_expiry_time})
+
+    def get_token(self):
+        sc = SlackClient("")
+        # Request the auth tokens from Slack
+        auth_response = sc.api_call(
+            "oauth.access",
+            client_id=os.environ["SLACK_BOT_CLIENT_ID"],
+            client_secret=os.environ["SLACK_BOT_CLIENT_SECRET"],
+            code=self.auth_code
+        )
+        return auth_response
+
+    @classmethod
+    def get_credentials(cls):
+        credentials = Database.find_one("slack_credentials", query=({}))
+        return cls(**credentials)
 
     @staticmethod
     def check_slack_token(test_token):
@@ -31,8 +76,9 @@ class SlackCommands(object):
             return False
 
     def authenticate_slack(self):
-        self.slack_client.api_call("api.test")
-        self.slack_client.api_call("auth.test")
+        self.access_token = self.get_slack_token()
+        self.access_token.api_call("api.test")
+        self.access_token.api_call("auth.test")
 
     def list_channels(self):
         channels_call = self.slack_client.api_call("channels.list")
@@ -147,6 +193,9 @@ class SlackCommands(object):
         return attachment
 
 
+if __name__ == "__main__":
+    slack = SlackCommands()
+    slack.authenticate_slack()
 # Deleting a message:
 # slack = SlackCommands()
 # slack.delete_message(channel_id='C0JS385LP', ts='1537797654.000100')

@@ -51,3 +51,4 @@ class App(object):
             Emailer.send_email(emails, selected_attachment, fact.fact_text)
 
 
+
