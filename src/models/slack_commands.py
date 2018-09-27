@@ -3,6 +3,7 @@ from commons.database import Database
 import time
 import uuid
 import os
+import re
 
 
 class SlackCommands(object):
@@ -38,7 +39,9 @@ class SlackCommands(object):
 
     def update_credentials(self, auth_response):
         self.access_token = auth_response['access_token']
-        self.token_expiry_time = int(time.time()) + int(auth_response['max-age'])
+        numbers = re.compile('\d+(?:\.\d+)?')
+        max_age = int(numbers.findall(auth_response['headers']['Strict-Transport-Security'])[0])
+        self.token_expiry_time = int(time.time()) + max_age
         Database.update(collection="slack_credentials",
                         query=({"_id": self._id}),
                         update=self.json())
