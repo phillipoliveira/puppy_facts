@@ -51,7 +51,7 @@ def post_install():
     else:
         auth_code = request.args['code']
         # An empty string is a valid token for this request
-        slack = SlackCommands.get_credentials()
+        slack = SlackCommands()
         slack.auth_code = auth_code
         auth_response = slack.get_token()
         slack.update_credentials(auth_response)
