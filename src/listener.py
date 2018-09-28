@@ -30,6 +30,17 @@ def inbound():
     return json.dumps({'success': True}), 200, {"content_type": "application/json"}
 
 
+@app.route('/puppy_facts/commands', methods=['POST'])
+def inbound():
+    event_data = json.loads(request.data.decode('utf-8'))
+    print(event_data)
+    # Echo the URL verification challenge code back to Slack
+    if "challenge" in event_data:
+        return make_response(
+            event_data.get("challenge"), 200, {"content_type": "application/json"}
+           )
+
+
 @app.route('/', methods=['GET'])
 def test():
         return Response('It works!')
