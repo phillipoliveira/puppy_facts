@@ -15,7 +15,7 @@ app = Flask(__name__)
 
 
 @app.route('/puppy_facts/events', methods=['POST'])
-def inbound():
+def events():
     event_data = json.loads(request.data.decode('utf-8'))
     # Echo the URL verification challenge code back to Slack
     if "challenge" in event_data:
@@ -31,7 +31,7 @@ def inbound():
 
 
 @app.route('/puppy_facts/commands', methods=['POST'])
-def inbound():
+def commands():
     event_data = json.loads(request.data.decode('utf-8'))
     print(event_data)
     # Echo the URL verification challenge code back to Slack
