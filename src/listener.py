@@ -23,7 +23,7 @@ def inbound():
             event_data.get("challenge"), 200, {"content_type": "application/json"}
            )
     elif "event" in event_data:
-        if all (event_data['event']['type'] == 'group_left'):
+        if event_data['event']['type'] == 'group_left':
             Distributor.remove_distributor(slack_channel_id=event_data['event']['channel'])
         elif all ([(event_data['event']['type'] == 'member_joined_channel'), (event_data['event']['user'] == 'UCZDTNS80')]):
             Distributor.add_distributor(type="slack", slack_channel_id=event_data['event']['channel'])
