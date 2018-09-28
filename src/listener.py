@@ -1,6 +1,7 @@
 from flask import Flask, request, Response, make_response
 from models.slack_commands import SlackCommands
 from models.distributors import Distributor
+from urllib.parse import unquote
 from slackclient import SlackClient
 from commons.database import Database
 from app import App
@@ -32,7 +33,7 @@ def events():
 
 @app.route('/puppy_facts/commands', methods=['POST'])
 def commands():
-    event_data = json.loads(request.data.decode('utf-8'))
+    event_data = unquote(request.data.decode('utf-8'))
     print(event_data)
     # Echo the URL verification challenge code back to Slack
     if "challenge" in event_data:
