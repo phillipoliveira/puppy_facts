@@ -39,7 +39,7 @@ class App(object):
                     raise LookupError("NO PUPPY FACTS AVAILABLE :(")
                 used = MessageLog.used_check(fact=fact.fact_text, image=image.image_url)
         if usage == "command":
-            return {"text": fact, "attachment": selected_attachment}
+            return {"text": fact.fact_text, "attachment": selected_attachment}
         for channel in channels:
             slack_commands = SlackCommands()
             response = slack_commands.send_message(
