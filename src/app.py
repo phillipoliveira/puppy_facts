@@ -12,7 +12,7 @@ import time
 class App(object):
 
     @staticmethod
-    def cron_job(slack_user=None):
+    def cron_job(slack_user=None, usage=None):
         if slack_user is None:
             channels = Distributor.get_distributors("slack")
             emails = Distributor.get_distributors("email")
@@ -38,6 +38,8 @@ class App(object):
                 if count > 100:
                     raise LookupError("NO PUPPY FACTS AVAILABLE :(")
                 used = MessageLog.used_check(fact=fact.fact_text, image=image.image_url)
+        if usage == "command":
+            return {"text": fact, "attachment": selected_attachment}
         for channel in channels:
             slack_commands = SlackCommands()
             response = slack_commands.send_message(
