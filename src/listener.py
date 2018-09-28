@@ -35,9 +35,9 @@ def events():
 def commands():
     channel_id = request.form.getlist('channel_id')[0]
     # Echo the URL verification challenge code back to Slack
-    response = App.cron_job(slack_user=channel_id, usage="command")
+    app_response = App.cron_job(slack_user=channel_id, usage="command")
     response = app.response_class(
-        response=json.dumps(response),
+        response=json.dumps(app_response),
         status=200,
         mimetype='application/json')
     return response
