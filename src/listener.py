@@ -18,6 +18,7 @@ app = Flask(__name__)
 def inbound():
     event_data = json.loads(request.data.decode('utf-8'))
     # Echo the URL verification challenge code back to Slack
+    print(event_data)
     if "challenge" in event_data:
         return make_response(
             event_data.get("challenge"), 200, {"content_type": "application/json"}
@@ -27,7 +28,6 @@ def inbound():
             Distributor.add_distributor(type="slack", slack_channel_id=event_data['event']['channel'])
         elif all ([(event_data['event']['type'] == 'member_left_channel'), (event_data['event']['user'] == 'UCZDTNS80')]):
             Distributor.remove_distributor(slack_channel_id=event_data['event']['channel'])
-    print(event_data)
     return json.dumps({'success': True}), 200, {"content_type": "application/json"}
 
 
