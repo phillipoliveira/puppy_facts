@@ -33,13 +33,10 @@ def events():
 
 @app.route('/puppy_facts/commands', methods=['POST'])
 def commands():
-    event_data = unquote(request.data.decode('utf-8'))
-    print(event_data)
+    channel_id = request.form.getlist('channel_id')[0]
     # Echo the URL verification challenge code back to Slack
-    if "challenge" in event_data:
-        return make_response(
-            event_data.get("challenge"), 200, {"content_type": "application/json"}
-           )
+    App.cron_job(slack_user=channel_id)
+    return json.dumps({'success': True}), 200, {"content_type": "application/json"}
 
 
 @app.route('/', methods=['GET'])
