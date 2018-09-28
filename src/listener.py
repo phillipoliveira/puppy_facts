@@ -1,5 +1,6 @@
 from flask import Flask, request, Response, make_response
 from models.slack_commands import SlackCommands
+from models.distributors import Distributor
 from slackclient import SlackClient
 from commons.database import Database
 from app import App
@@ -13,7 +14,7 @@ import uuid
 app = Flask(__name__)
 
 
-@app.route('/slack', methods=['POST'])
+@app.route('/puppy_facts/events', methods=['POST'])
 def inbound():
     event_data = json.loads(request.data.decode('utf-8'))
     # Echo the URL verification challenge code back to Slack
@@ -21,9 +22,14 @@ def inbound():
         return make_response(
             event_data.get("challenge"), 200, {"content_type": "application/json"}
            )
-    elif "event" in event_data: 
-        print(event_data)
-        return
+    elif "event" in event_data:
+        if all ([(event_data['type'] == 'member_joined_channel'), (event_data['user'] == 'UCZDTNS80')]):
+            Distributor.add_distributor(type="slack", slack_channel_id=event_data['channel'])
+        elif all ([(event_data['type'] == 'member_left_channel'), (event_data['user'] == 'UCZDTNS80')]):
+            Distributor.remove_distributor(slack_channel_id=event_data['channel'])
+    return make_response(200, {"content_type": "application/json"})
+
+
 
 
 @app.route('/', methods=['GET'])
@@ -31,7 +37,7 @@ def test():
         return Response('It works!')
 
 
-@app.route("/begin_auth", methods=["GET"])
+@app.route("/puppy_facts/begin_auth", methods=["GET"])
 def pre_install():
     return '''
       <a href="https://slack.com/oauth/authorize?scope={0}&client_id={1}">
@@ -40,7 +46,7 @@ def pre_install():
   '''.format(os.environ["SLACK_OAUTH_SCOPE"], os.environ["SLACK_BOT_CLIENT_ID"])
 
 
-@app.route("/finish_auth", methods=["GET", "POST"])
+@app.route("/puppy_facts/finish_auth", methods=["GET", "POST"])
 def post_install():
     if 'error' in request.args:
         return Response("It didn't work!")
