@@ -39,7 +39,7 @@ def commands():
     response = app.response_class(
         response=json.dumps(response),
         status=200,
-        mimetype='application/json'
+        mimetype='application/json')
     return response
 
 
