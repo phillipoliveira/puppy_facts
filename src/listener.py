@@ -28,7 +28,7 @@ def inbound():
             Distributor.add_distributor(type="slack", slack_channel_id=event_data['event']['channel'])
         elif all ([(event_data['event']['type'] == 'member_left_channel'), (event_data['event']['user'] == 'UCZDTNS80')]):
             Distributor.remove_distributor(slack_channel_id=event_data['event']['channel'])
-    return make_response(200, {"content_type": "application/json"})
+        return json.dumps({'success': True}), 200, {"content_type": "application/json"}
 
 
 
