@@ -11,10 +11,12 @@ class SlackCommands(object):
                  access_token=None,
                  auth_code=None,
                  token_expiry_time=None,
+                 team_id=None,
                  _id=None):
         self.access_token = None if access_token is None else access_token
         self.auth_code = None if auth_code is None else auth_code
         self.token_expiry_time = None if token_expiry_time is None else token_expiry_time
+        self.team_id= None if team_id is None else team_id
         self._id = self._id = uuid.uuid4().hex if _id is None else _id
 
     @classmethod
@@ -39,6 +41,7 @@ class SlackCommands(object):
 
     def update_credentials(self, auth_response):
         self.access_token = auth_response['access_token']
+        self.team_id = auth_response['team_id']
         numbers = re.compile('\d+(?:\.\d+)?')
         max_age = int(numbers.findall(auth_response['headers']['Strict-Transport-Security'])[0])
         self.token_expiry_time = int(time.time()) + max_age
@@ -48,6 +51,7 @@ class SlackCommands(object):
 
     def add_credentials(self, auth_response):
         self.access_token = auth_response['access_token']
+        self.team_id = auth_response['team_id']
         numbers = re.compile('\d+(?:\.\d+)?')
         max_age = int(numbers.findall(auth_response['headers']['Strict-Transport-Security'])[0])
         self.token_expiry_time = int(time.time()) + max_age
@@ -59,7 +63,8 @@ class SlackCommands(object):
             "_id": self._id,
             "access_token": self.access_token,
             "auth_code": self.auth_code,
-            "token_expiry_time": self.token_expiry_time})
+            "token_expiry_time": self.token_expiry_time,
+            "team_id": self.team_id})
 
     def get_token(self):
         sc = SlackClient("")
@@ -70,7 +75,6 @@ class SlackCommands(object):
             client_secret=os.environ["SLACK_BOT_CLIENT_SECRET"],
             code=self.auth_code
         )
-        print(auth_response)
         return auth_response
 
     @classmethod
