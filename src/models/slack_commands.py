@@ -70,6 +70,7 @@ class SlackCommands(object):
             client_secret=os.environ["SLACK_BOT_CLIENT_SECRET"],
             code=self.auth_code
         )
+        print(auth_response)
         return auth_response
 
     @classmethod
