@@ -1,15 +1,8 @@
 from flask import Flask, request, Response, make_response
 from models.slack_commands import SlackCommands
 from models.distributors import Distributor
-from urllib.parse import unquote
-from slackclient import SlackClient
-from commons.database import Database
 from app import App
-import re
 import json
-import os
-import time
-import uuid
 
 
 app = Flask(__name__)
@@ -55,7 +48,8 @@ def pre_install():
       <a href="https://slack.com/oauth/authorize?scope={0}&client_id={1}">
           Add to Slack
       </a>
-  '''.format(os.environ["SLACK_OAUTH_SCOPE"], os.environ["SLACK_BOT_CLIENT_ID"])
+  '''.format(SlackCommands.get_app_credentials()["SLACK_OAUTH_SCOPE"],
+             (SlackCommands.get_app_credentials()["SLACK_BOT_CLIENT_ID"]))
 
 
 @app.route("/puppy_facts/finish_auth", methods=["GET", "POST"])
@@ -67,13 +61,13 @@ def post_install():
         auth_code = request.args['code']
         # An empty string is a valid token for this request
         slack = SlackCommands()
-        slack.auth_code = auth_code
-        auth_response = slack.get_token()
+        auth_response = slack.slack_token_request(auth_code)
         try:
-            slack.get_credentials(auth_response)
-            slack.update_credentials(auth_response)
+            slack.get_token_from_database(team_id=auth_response['team_id'],
+                                          user_id=auth_response['user_id'])
+            slack.update_token(auth_response)
         except TypeError:
-            slack.add_credentials(auth_response)
+            slack.add_token(auth_response)
         return Response('It worked!')
 
 
