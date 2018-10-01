@@ -12,13 +12,9 @@ import time
 class App(object):
 
     @staticmethod
-    def cron_job(slack_user=None, usage=None):
-        if slack_user is None:
-            channels = Distributor.get_distributors("slack")
-            emails = Distributor.get_distributors("email")
-        else:
-            channel = Distributor(type="slack", slack_id=slack_user)
-            channels = [channel]
+    def cron_job(usage=None):
+        channels = Distributor.get_distributors("slack")
+        emails = Distributor.get_distributors("email")
         print("sending...")
         used = False
         count = 0
@@ -40,15 +36,15 @@ class App(object):
                 used = MessageLog.used_check(fact=fact.fact_text, image=image.image_url)
         if usage == "command":
             return {"text": fact.fact_text, "attachments": selected_attachment}
-        for channel in channels:
-            slack_commands = SlackCommands()
-            response = slack_commands.send_message(
-                user=user,
-                channel=channel,
-                fact=fact,
-                selected_attachment=selected_attachment
-            )
-            MessageLog.log_message(response)
-        if slack_user is None:
+        else:
+            for channel in channels:
+                slack_commands = SlackCommands()
+                response = slack_commands.send_message(
+                    user=user,
+                    channel=channel,
+                    fact=fact,
+                    selected_attachment=selected_attachment
+                )
+                MessageLog.log_message(response)
             Emailer.send_email(emails, selected_attachment, fact.fact_text)
 

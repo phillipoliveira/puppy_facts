@@ -29,10 +29,8 @@ def events():
 
 @app.route('/puppy_facts/commands', methods=['POST'])
 def commands():
-    channel_id = request.form.getlist('channel_id')[0]
-    print(request.form)
     # Echo the URL verification challenge code back to Slack
-    app_response = App.cron_job(slack_user=channel_id, usage="command")
+    app_response = App.cron_job(usage="command")
     response = app.response_class(
         response=json.dumps(app_response),
         status=200,
