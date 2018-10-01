@@ -112,7 +112,7 @@ class Commands(object):
                 Distributor.add_distributor(type="email", email_address=response[1])
                 print("Email address successfully added")
             elif response[0] == "add-slack":
-                Distributor.add_distributor(type="slack", slack_channel_id=response[1])
+                Distributor.add_distributor(type="slack", slack_ids=response[1])
                 print("Slack channel successfully added")
         else:
             cls.failure()
@@ -125,7 +125,7 @@ class Commands(object):
                     print("Email address successfully removed")
                     return
             elif response[0] == "remove-slack":
-                if Distributor.remove_distributor(slack_channel_id=response[1]):
+                if Distributor.remove_distributor(slack_ids=response[1]):
                     print("Slack channel successfully removed")
                     return
         cls.failure()
@@ -137,7 +137,7 @@ class Commands(object):
             print(distributor.email_address)
         distributors_slack = (Distributor.get_distributors(type="slack"))
         for distributor in distributors_slack:
-            print(distributor.slack_channel_id)
+            print(distributor.slack_ids)
 
 
 
