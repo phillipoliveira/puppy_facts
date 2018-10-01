@@ -62,14 +62,14 @@ def post_install():
     else:
         auth_code = request.args['code']
         # An empty string is a valid token for this request
-        slack = SlackCommands()
-        auth_response = slack.slack_token_request(auth_code)
+        auth_response = SlackCommands.slack_token_request(auth_code)
         try:
-            slack.get_token_from_database(team_id=auth_response['team_id'],
-                                          user_id=auth_response['user_id'])
-            slack.update_token(auth_response)
+            token = SlackCommands.get_token_from_database(team_id=auth_response['team_id'],
+                                                          user_id=auth_response['user_id'])
+            token.update_token(auth_response)
         except TypeError:
-            slack.add_token(auth_response)
+            token = SlackCommands()
+            token.add_token(auth_response)
         return Response('It worked!')
 
 
