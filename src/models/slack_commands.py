@@ -91,6 +91,7 @@ class SlackCommands(object):
             client_secret=cls.get_app_credentials()["SLACK_BOT_CLIENT_SECRET"],
             code=auth_code
         )
+        print(auth_response)
         return auth_response
 
     @classmethod
