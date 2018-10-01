@@ -49,7 +49,7 @@ class SlackCommands(object):
     def update_token(self, auth_response):
         database = Database()
         database.initialize()
-        self.access_token = auth_response['bot_access_token']
+        self.access_token = auth_response['bot']['bot_access_token']
         self.team_id = auth_response['team_id']
         self.user_id = auth_response['user_id']
         numbers = re.compile('\d+(?:\.\d+)?')
@@ -63,7 +63,7 @@ class SlackCommands(object):
     def add_token(self, auth_response):
         database = Database()
         database.initialize()
-        self.access_token = auth_response['bot_access_token']
+        self.access_token = auth_response['bot']['bot_access_token']
         self.user_id = auth_response['user_id']
         self.team_id = auth_response['team_id']
         numbers = re.compile('\d+(?:\.\d+)?')
