@@ -18,7 +18,7 @@ def events():
            )
     elif "event" in event_data:
         print(event_data)
-        if all([(event_data['event']['type'] == 'group_left'),(event_data['api_app_id'] == 'AD1G9047Q')]):
+        if all([(event_data['event']['type'] == 'group_left'), (event_data['api_app_id'] == 'AD1G9047Q')]):
             Distributor.remove_distributor(slack_ids={"channel_id": event_data['event']['channel'],
                                                       "team_id": event_data['team_id']})
         elif all([(event_data['event']['type'] == 'member_joined_channel'), (event_data['api_app_id'] == 'AD1G9047Q')]):
