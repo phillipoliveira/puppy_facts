@@ -23,7 +23,8 @@ class Distributor(object):
         database.initialize()
         if database.find_one("distributors", {"email_address": email_address,
                                               "slack_ids": slack_ids}):
-            database.remove("distributors", {"email_address": email_address})
+            database.remove("distributors", {"email_address": email_address,
+                                             "slack_ids": slack_ids})
             return True
 
     @staticmethod

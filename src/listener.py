@@ -17,6 +17,7 @@ def events():
             event_data.get("challenge"), 200, {"content_type": "application/json"}
            )
     elif "event" in event_data:
+        print(event_data)
         if all([(event_data['event']['type'] == 'group_left'),(event_data['api_app_id'] == 'AD1G9047Q')]):
             Distributor.remove_distributor(slack_ids={"channel_id": event_data['event']['channel'],
                                                       "team_id": event_data['team_id']})
