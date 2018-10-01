@@ -121,8 +121,8 @@ class SlackCommands(object):
             return False
 
     @staticmethod
-    def authenticate_slack():
-        slack_client = SlackCommands.get_slack_token()
+    def authenticate_slack(team_id):
+        slack_client = SlackCommands.get_slack_token(team_id=team_id)
         slack_client.api_call("api.test")
         slack_client.api_call("auth.test")
 
@@ -174,9 +174,9 @@ class SlackCommands(object):
 
     @classmethod
     def send_message(cls, user, channel, fact, selected_attachment):
-        response = (cls.get_slack_token().api_call(
+        response = (cls.get_slack_token(team_id=channel.slack_ids['team_id']).api_call(
             "chat.postMessage",
-            channel=channel.slack_channel_id,
+            channel=channel.slack_ids['channel_id'],
             text=fact.fact_text,
             attachments=selected_attachment
         ))
@@ -184,12 +184,12 @@ class SlackCommands(object):
         return response
 
     @classmethod
-    def send_raw_message(cls, channel, text):
-        cls.get_slack_token().api_call("chat.postMessage", channel=channel, text=text)
+    def send_raw_message(cls, team_id, channel, text):
+        cls.get_slack_token(team_id).api_call("chat.postMessage", channel=channel, text=text)
 
     @classmethod
-    def delete_message(cls, channel_id, ts):
-        response = (cls.get_slack_token().api_call(
+    def delete_message(cls, team_id, channel_id, ts):
+        response = (cls.get_slack_token(team_id=team_id).api_call(
             "chat.delete",
             channel=channel_id,
             ts=ts
@@ -197,15 +197,15 @@ class SlackCommands(object):
         print(response)
 
     @classmethod
-    def return_group_id(cls, name):
-        groups_call = cls.get_slack_token().api_call("groups.list")
+    def return_group_id(cls, name, team_id):
+        groups_call = cls.get_slack_token(team_id=team_id).api_call("groups.list")
         for g in groups_call['groups']:
             if g['name'] == name:
                 return list(g['id'])
 
     @classmethod
-    def return_user_id(cls, firstname):
-        users = cls.get_slack_token().api_call("users.list")
+    def return_user_id(cls, firstname, team_id):
+        users = cls.get_slack_token(team_id=team_id).api_call("users.list")
         l,results,count = [],[],0
         for i in users['members']:
             l.append(i['id'])
@@ -223,8 +223,8 @@ class SlackCommands(object):
         return set(results)
 
     @classmethod
-    def print_users(cls):
-        users = cls.get_slack_token().api_call("users.list")
+    def print_users(cls, team_id):
+        users = cls.get_slack_token(team_id=team_id).api_call("users.list")
         for i in users['members']:
             try:
                 print(i[u'profile']['first_name'] +" "+ i[u'profile']['last_name'])
@@ -245,11 +245,6 @@ class SlackCommands(object):
         ]
         return attachment
 
-
-if __name__ == "__main__":
-    slack = SlackCommands()
-    slack.authenticate_slack()
-    slack.print_channels()
 # Deleting a message:
 # slack = SlackCommands()
 # slack.delete_message(channel_id='C0JS385LP', ts='1537797654.000100')

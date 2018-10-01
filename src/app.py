@@ -17,7 +17,7 @@ class App(object):
             channels = Distributor.get_distributors("slack")
             emails = Distributor.get_distributors("email")
         else:
-            channel = Distributor(type="slack", slack_channel_id=slack_user)
+            channel = Distributor(type="slack", slack_id=slack_user)
             channels = [channel]
         print("sending...")
         used = False

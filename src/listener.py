@@ -17,10 +17,12 @@ def events():
             event_data.get("challenge"), 200, {"content_type": "application/json"}
            )
     elif "event" in event_data:
-        if event_data['event']['type'] == 'group_left':
-            Distributor.remove_distributor(slack_channel_id=event_data['event']['channel'])
-        elif all ([(event_data['event']['type'] == 'member_joined_channel'), (event_data['event']['user'] == 'UCZDTNS80')]):
-            Distributor.add_distributor(type="slack", slack_channel_id=event_data['event']['channel'])
+        if all([(event_data['event']['type'] == 'group_left'),(event_data['event']['api_app_id'] == 'AD1G9047Q')]):
+            Distributor.remove_distributor(slack_ids={"channel_id": event_data['event']['channel'],
+                                                      "team_id": event_data['team_id']})
+        elif all([(event_data['event']['type'] == 'member_joined_channel'), (event_data['event']['api_app_id'] == 'AD1G9047Q')]):
+            Distributor.add_distributor(type="slack", slack_ids={"channel_id": event_data['event']['channel'],
+                                                                 "team_id": event_data['team_id']})
     return json.dumps({'success': True}), 200, {"content_type": "application/json"}
 
 
