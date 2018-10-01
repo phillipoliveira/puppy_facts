@@ -21,10 +21,8 @@ class Distributor(object):
     def remove_distributor(email_address=None, slack_ids=None):
         database = Database()
         database.initialize()
-        print(slack_ids)
         if database.find_one("distributors", {"email_address": email_address,
                                               "slack_ids": slack_ids}):
-            print('found it!')
             database.remove("distributors", {"email_address": email_address,
                                              "slack_ids": slack_ids})
             return True
