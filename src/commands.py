@@ -140,7 +140,6 @@ class Commands(object):
             print(distributor.slack_ids)
 
 
-
     @staticmethod
     def print_slack_channels(response):
         slack = SlackCommands()

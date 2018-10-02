@@ -2,6 +2,7 @@ from instagram_scraper import InstagramScraper
 from commons.database import Database
 from models.images import Images
 import getpass
+import pprint
 
 
 class ImageScraper(object):
@@ -63,6 +64,7 @@ class ImageScraper(object):
                                                  media_metadata=True, download_files=False)
             instagram_session.login()
         json_data = instagram_session.scrape()
+        pprint.pprint(json_data)
         return json_data
 
 
