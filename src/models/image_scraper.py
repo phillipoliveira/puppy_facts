@@ -64,7 +64,6 @@ class ImageScraper(object):
                                                  media_metadata=True, download_files=False)
             instagram_session.login()
         json_data = instagram_session.scrape()
-        pprint.pprint(json_data)
         return json_data
 
 
