@@ -32,6 +32,7 @@ def events():
 def return_fact(fact_type):
     # Echo the URL verification challenge code back to Slack
     app_response = App.cron_job(usage="command", fact_type=fact_type)
+    app_response["response_type"] = "in_channel"
     response = app.response_class(
         response=json.dumps(app_response),
         status=200,
@@ -47,7 +48,8 @@ def add_fact(fact_type):
     fact_text = raw_text + " #CustomFact by {}".format(username)
     Facts.add_fact(fact_type=fact_type, fact_text=fact_text)
     response = app.response_class(
-        response=json.dumps({"text": "Thanks {}! Your fact has been added. :slightly_smiling_face:".format(username)}),
+        response=json.dumps({"text": "Thanks {}! Your fact has been added. :slightly_smiling_face:".format(username),
+                             "response_type": "in_channel"}),
         status=200,
         mimetype='application/json')
     return response
