@@ -42,8 +42,8 @@ def return_fact(fact_type):
 @app.route('/puppy_facts/add/<string:fact_type>', methods=['POST'])
 def add_fact(fact_type):
     # Echo the URL verification challenge code back to Slack
-    username = request.form.getlist('user_name')
-    raw_text = request.form.getlist('text')
+    username = request.form.getlist('user_name')[0]
+    raw_text = request.form.getlist('text')[0]
     fact_text = raw_text + " #CustomFacts" + "-{}".format(username)
     Facts.add_fact(fact_type=fact_type, fact_text=fact_text)
     response = app.response_class(
