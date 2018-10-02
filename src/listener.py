@@ -1,6 +1,7 @@
 from flask import Flask, request, Response, make_response
 from models.slack_commands import SlackCommands
 from models.distributors import Distributor
+from models.facts import Facts
 from app import App
 import json
 
@@ -27,12 +28,26 @@ def events():
     return json.dumps({'success': True}), 200, {"content_type": "application/json"}
 
 
-@app.route('/puppy_facts/commands', methods=['POST'])
-def commands():
+@app.route('/puppy_facts/<string:fact_type>', methods=['POST'])
+def return_fact(fact_type):
     # Echo the URL verification challenge code back to Slack
-    app_response = App.cron_job(usage="command")
+    app_response = App.cron_job(usage="command", fact_type=fact_type)
     response = app.response_class(
         response=json.dumps(app_response),
+        status=200,
+        mimetype='application/json')
+    return response
+
+
+@app.route('/puppy_facts/add/<string:fact_type>', methods=['POST'])
+def add_fact(fact_type):
+    # Echo the URL verification challenge code back to Slack
+    username = request.form.getlist('user_name')
+    raw_text = request.form.getlist('text')
+    fact_text = raw_text + " #CustomFacts" + "-{}".format(username)
+    Facts.add_fact(fact_type=fact_type, fact_text=fact_text)
+    response = app.response_class(
+        response=json.dumps({"text": "Thanks {}! Your fact has been added. :slightly_smiling_face:".format(username)}),
         status=200,
         mimetype='application/json')
     return response

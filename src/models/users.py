@@ -46,8 +46,8 @@ class Users(object):
         }
 
     @classmethod
-    def get_lowest_send_count(cls):
-        users = cls.get_users()
+    def get_lowest_send_count(cls, query=({})):
+        users = cls.get_users(query)
         num_list = []
         for user in users:
             num_list.append(user.send_count)
@@ -58,10 +58,15 @@ class Users(object):
         return lowest_num
 
     @classmethod
-    def choose_user(cls):
-        lowest_num = cls.get_lowest_send_count()
+    def choose_user(cls, fact_type=None):
         user_list = []
-        users = cls.get_users(query=({"send_count": lowest_num}))
+        if fact_type is not None:
+            lowest_num = cls.get_lowest_send_count(query=({"associated_fact_type": fact_type}))
+            users = cls.get_users(query=({"send_count": lowest_num,
+                                          "associated_fact_type": fact_type}))
+        else:
+            lowest_num = cls.get_lowest_send_count(query=({}))
+            users = cls.get_users(query=({"send_count": lowest_num}))
         for user in users:
             user_list.append(user)
         choice = random.choice(user_list)

@@ -12,14 +12,14 @@ import time
 class App(object):
 
     @staticmethod
-    def cron_job(usage=None):
+    def cron_job(usage=None, fact_type=None):
         channels = Distributor.get_distributors("slack")
         emails = Distributor.get_distributors("email")
         print("sending...")
         used = False
         count = 0
         while used is False:
-            user = Users.choose_user()
+            user = Users.choose_user(fact_type)
             image = Images.find_images_by_owner(user.instatag)
             fact = Facts.retrieve_random_fact(user.associated_fact_type)
             selected_attachment = SlackCommands.create_slack_attachment(
