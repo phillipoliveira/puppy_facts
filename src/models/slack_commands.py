@@ -181,7 +181,6 @@ class SlackCommands(object):
             text=fact.fact_text,
             attachments=selected_attachment
         ))
-        user.add_to_send_count()
         return response
 
     @classmethod

@@ -101,3 +101,8 @@ class Users(object):
 #	"send_count" : 0,
 #	"associated_fact_type" : "puppy_fact"
 #})
+
+user = Users(instatag="balzner",
+             hashtag="sebfaces",
+             associated_fact_type="horse_type")
+user.onboard_user(update=False)

@@ -35,6 +35,7 @@ class App(object):
                     raise LookupError("NO PUPPY FACTS AVAILABLE :(")
                 used = MessageLog.used_check(fact=fact.fact_text, image=image.image_url)
         if usage == "command":
+            user.add_to_send_count()
             return {"text": fact.fact_text,
                     "attachments": selected_attachment}
         else:
@@ -47,5 +48,6 @@ class App(object):
                     selected_attachment=selected_attachment
                 )
                 MessageLog.log_message(response)
+            user.add_to_send_count()
             Emailer.send_email(emails, selected_attachment, fact.fact_text)
 
