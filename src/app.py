@@ -50,4 +50,3 @@ class App(object):
                 MessageLog.log_message(response)
             user.add_to_send_count()
             Emailer.send_email(emails, selected_attachment, fact.fact_text)
-

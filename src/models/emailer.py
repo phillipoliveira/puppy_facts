@@ -1,6 +1,12 @@
 import smtplib
+import requests
 from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.mime.image import MIMEImage
 from commons.database import Database
+from PIL import Image, ImageTk
+from io import BytesIO
+from resizeimage import resizeimage
 
 
 class Emailer(object):
@@ -42,22 +48,43 @@ class Emailer(object):
     def send_email(cls, users, selected_attachment, selected_fact):
         email, password = cls.get_email_credentials()
         gmail_user = email
-        fromx = email
         gmail_password = password
+        server = smtplib.SMTP('smtp.gmail.com:587')
+        server.starttls()
+        server.ehlo()
+        server.login(gmail_user, gmail_password)
+        img_data = cls.get_image_resize(selected_attachment)
+        html_part = MIMEMultipart(_subtype='related')
+        body = MIMEText('<p>{}\n \n{}\n <img src="cid:myimage" /></p>'.format(selected_fact,
+                                                                              selected_attachment[0][
+                                                                                  "author_name"]),
+                        _subtype='html')
+        html_part.attach(body)
+        # Now create the MIME container for the image
+        img = MIMEImage(img_data, 'jpeg')
+        img.add_header('Content-Id', '<myimage>')  # angle brackets are important
+        img.add_header("Content-Disposition", "inline", filename="myimage")  # David Hess recommended this edit
+        html_part.attach(img)
+        msg = MIMEMultipart(_subtype='related')
+        msg['Subject'] = "Daily Facts Bot! (and sometimes horses and cats)"
+        msg['From'] = gmail_user
+        msg.attach(html_part)
         for user in users:
-            to = user.email_address
-            server = smtplib.SMTP('smtp.gmail.com:587')
-            server.starttls()
-            server.ehlo()
-            server.login(gmail_user, gmail_password)
-            msg = MIMEText("{}\n \n{} \n{}".format(selected_fact,
-                                                   selected_attachment[0]["author_name"],
-                                                   selected_attachment[0]["image_url"]))
-            msg['Subject'] = "Daily Facts Bot! (and sometimes horses and cats)"
-            msg['From'] = fromx
-            msg['To'] = to
-            server.sendmail(fromx, to, msg.as_string())
-            server.quit()
+            msg['To'] = user.email_address
+            server.sendmail(gmail_user, user.email_address, msg.as_string())
+        server.quit()
+
+    @staticmethod
+    def get_image_resize(selected_attachment):
+        url = selected_attachment[0]["image_url"]
+        r = requests.get(url)
+        image = Image.open(BytesIO(r.content))
+        image.mode = 'RGB'
+        image = resizeimage.resize_contain(image, [800, 800])
+        imgByteArr = BytesIO()
+        image.save(imgByteArr, format='PNG')
+        imgByteArr = imgByteArr.getvalue()
+        return imgByteArr
 
 
 Emailer.get_email_credentials(returnless=False)
