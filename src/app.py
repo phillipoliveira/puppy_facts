@@ -7,6 +7,7 @@ from models.facts import Facts
 from models.distributors import Distributor
 import time
 # test channel = GCPJJ4G3U C0JS385LP
+from pprint import pprint
 
 
 class App(object):
@@ -34,6 +35,7 @@ class App(object):
                 if count > 100:
                     raise LookupError("NO PUPPY FACTS AVAILABLE :(")
                 used = MessageLog.used_check(fact=fact.fact_text, image=image.image_url)
+        pprint(selected_attachment)
         if usage == "command":
             user.add_to_send_count()
             return {"text": fact.fact_text,
