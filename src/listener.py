@@ -3,10 +3,20 @@ from models.slack_commands import SlackCommands
 from models.distributors import Distributor
 from models.facts import Facts
 from app import App
+from pprint import pprint
 import json
 
 
 app = Flask(__name__)
+
+
+@app.route('/puppy_facts/instagram_redirect', methods=["GET", "POST"])
+def instagram_redirect():
+    if 'error' in request.args:
+        return Response("It didn't work!")
+    # Retrieve the auth code from the request params
+    else:
+        pprint(request.args)
 
 
 @app.route('/puppy_facts/events', methods=['POST'])
