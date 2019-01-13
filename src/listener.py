@@ -16,7 +16,7 @@ def instagram_redirect():
         return Response("It didn't work!")
     # Retrieve the auth code from the request params
     else:
-        print(request.args['access_token'])
+        print(request.args)
         return Response("It worked! Thanks!")
 
 
