@@ -56,14 +56,12 @@ class Emailer(object):
         img_data = cls.get_image_resize(selected_attachment)
         html_part = MIMEMultipart(_subtype='related')
         body = MIMEText('<p>{}\n \n{}\n <img src="cid:myimage" /></p>'.format(selected_fact,
-                                                                              selected_attachment[0][
-                                                                                  "author_name"]),
+                                                                              selected_attachment[0]["author_name"]),
                         _subtype='html')
         html_part.attach(body)
-        # Now create the MIME container for the image
         img = MIMEImage(img_data, 'jpeg')
-        img.add_header('Content-Id', '<myimage>')  # angle brackets are important
-        img.add_header("Content-Disposition", "inline", filename="myimage")  # David Hess recommended this edit
+        img.add_header('Content-Id', '<myimage>')
+        img.add_header("Content-Disposition", "inline", filename="myimage")
         html_part.attach(img)
         msg = MIMEMultipart(_subtype='related')
         msg['Subject'] = "Daily Facts Bot! (and sometimes horses and cats)"

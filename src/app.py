@@ -21,20 +21,17 @@ class App(object):
         count = 0
         while used is False:
             user = Users.choose_user(fact_type)
-            image = Images.find_images_by_owner(user.instatag)
+            image = Images.get_images(user=user.instatag, hashtag=user.hashtag)
             fact = Facts.retrieve_random_fact(user.associated_fact_type)
             selected_attachment = SlackCommands.create_slack_attachment(
-                img=image.image_url,
+                img=image['image_url'],
                 insta_tag=user.instatag,
-                ts=image.ts
+                ts=image['ts']
             )
-            if image.image_url == "":
-                used = False
-            else:
-                count += 1
-                if count > 100:
-                    raise LookupError("NO PUPPY FACTS AVAILABLE :(")
-                used = MessageLog.used_check(fact=fact.fact_text, image=image.image_url)
+            count += 1
+            if count > 100:
+                raise LookupError("NO PUPPY FACTS AVAILABLE :(")
+            used = MessageLog.used_check(fact=fact.fact_text, image=image['image_url'])
         pprint(selected_attachment)
         if usage == "command":
             user.add_to_send_count()

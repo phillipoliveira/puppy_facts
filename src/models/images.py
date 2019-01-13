@@ -1,78 +1,53 @@
 import uuid
 import random
+import requests
+from bs4 import BeautifulSoup
+import json
 import re
 from commons.database import Database
 
 
 class Images(object):
-    def __init__(self, owner, associated_fact_type, image_url, ts, _id=None):
-        self.owner = owner
-        self.associated_fact_type = associated_fact_type
+    def __init__(self, image_url, ts, _id=None):
         self.image_url = image_url
         self.ts = ts
         self._id = uuid.uuid4().hex if _id is None else _id
 
-    def add_image_to_database(self):
-        database = Database()
-        database.initialize()
-        database.insert("images", self.json())
+    @staticmethod
+    def get_scripts(url):
+        session = requests.session()
+        request = session.get(url)
+        page_content = request.content
+        soup = BeautifulSoup(page_content, "html.parser")
+        scripts = str(soup).split("""<script type="text/javascript">window._sharedData = """)[1].split(";</script>")
+        raw_json = json.loads(scripts[0])
+        return raw_json
 
     @classmethod
-    def find_images(cls, query=({})):
-        database = Database()
-        database.initialize()
-        images = database.find("images", query)
-        return [cls(**image) for image in images]
-
-    @classmethod
-    def find_images_by_owner(cls, owner):
-        image = False
-        while image is False:
-            images = cls.find_images(query=({"owner": owner}))
+    def get_images(cls, user, hashtag):
+        url = "https://www.instagram.com/{}/".format(user)
+        raw_json = cls.get_scripts(url)
+        nodes = raw_json['entry_data']['ProfilePage'][0]['graphql']['user']['edge_owner_to_timeline_media']['edges']
+        owner_id = nodes[0]['node']['owner']['id']
+        images = list()
+        if hashtag is None:
+            for node in nodes:
+                image = (node['node']['thumbnail_src'])
+                ts = node['node']['taken_at_timestamp']
+                images.append({"image_url": image, "ts": ts})
+        else:
+            url = "https://www.instagram.com/explore/tags/{}/".format(hashtag)
+            raw_json = cls.get_scripts(url)
+            nodes = raw_json['entry_data']['TagPage'][0]['graphql']['hashtag']['edge_hashtag_to_media']['edges']
+            for node in nodes:
+                if node['node']['owner']['id'] == owner_id:
+                    image = node['node']['thumbnail_src']
+                    ts = node['node']['taken_at_timestamp']
+                    images.append({"image_url": image, "ts": ts})
+        chosen_image = {"image_url":""}
+        while re.search(".jpg", chosen_image['image_url']) is None:
             chosen_image = random.choice(images)
-            if re.search(".mp4", chosen_image.image_url):
-                image = False
-            else:
-                image = True
         return chosen_image
 
-    def json(self):
-        return {
-            "_id": self._id,
-            "owner": self.owner,
-            "associated_fact_type": self.associated_fact_type,
-            "image_url": self.image_url,
-            "ts": self.ts
-        }
-
-    def update_image_data(self, update):
-        database = Database()
-        database.initialize()
-        database.update("images", {"_id": self._id}, update)
-
-    @classmethod
-    def remove_image_data(cls, owner):
-        images = cls.find_images(query=({"owner": owner}))
-        for image in images:
-            database = Database()
-            database.initialize()
-            database.remove("images", image.json())
-
-    @staticmethod
-    def get_image_count(user):
-        images = Images.find_images({"owner": user.instatag})
-        image_count = len(images)
-        return image_count
-
-# mass updating images
-# images = Images.find_images(query=({"owner": "balzner"}))
-# for image in images:
-#    image.update_image_data(update=({
-#                                         "_id" : image._id,
-#                                         "owner" : image.owner,
-#                                         "associated_fact_type" : "horse_fact",
-#                                         "image_url" : image.image_url,
-#                                         "ts" : image.ts
-#                                     }))
 
 
