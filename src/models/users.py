@@ -84,7 +84,6 @@ class Users(object):
         database = Database()
         database.initialize()
         database.remove("users", {"_id": self._id})
-        Images.remove_image_data(self.instatag)
         print("User successfully removed")
 
 
