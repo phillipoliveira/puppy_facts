@@ -1,3 +1,0 @@
-2018-10-01 22:48:53,876 - instagram_scraper.app - WARNING - Retry after exception TooManyRedirects('Exceeded 30 redirects.',) on https://www.instagram.com/
-2018-10-01 22:49:01,523 - instagram_scraper.app - WARNING - Retry after exception TooManyRedirects('Exceeded 30 redirects.',) on https://www.instagram.com/
-2018-10-01 22:49:14,146 - instagram_scraper.app - WARNING - Retry after exception TooManyRedirects('Exceeded 30 redirects.',) on https://www.instagram.com/

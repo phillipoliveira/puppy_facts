@@ -1,5 +1,4 @@
 from commons.database import Database
-from models.image_scraper import ImageScraper
 from models.images import Images
 import uuid
 import random
@@ -13,14 +12,11 @@ class Users(object):
         self.send_count = 0 if send_count is None else send_count
         self._id = uuid.uuid4().hex if _id is None else _id
 
-    def onboard_user(self, update=False):
-        json_data = ImageScraper.scrape_instagram(self)
-        ImageScraper.update_image_database(json_data, user=self)
-        if update is False:
-            database = Database()
-            database.initialize()
-            database.insert("users", self.json())
-            print("User successfully added")
+    def onboard_user(self):
+        database = Database()
+        database.initialize()
+        database.insert("users", self.json())
+        print("User successfully added")
 
     @classmethod
     def get_users(cls, query=({})):

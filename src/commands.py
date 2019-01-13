@@ -95,17 +95,6 @@ class Commands(object):
                 cls.user_not_found()
 
     @classmethod
-    def update_user(cls, response):
-        if len(response) != 2:
-            cls.failure()
-        else:
-            user = Users.get_one_user(query=({"instatag": response[1]}))
-            if user is not None:
-                user.onboard_user(update=True)
-            else:
-                cls.user_not_found()
-
-    @classmethod
     def add_distributor(cls, response):
         if len(response) == 2:
             if response[0] == "add-email":
