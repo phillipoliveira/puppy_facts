@@ -6,7 +6,7 @@ To only scrape Instagram media that contains a particular hashtag:
 add-user <instatag> hashtag <hashtag> fact-type <fact_type>
 
 To see existing user data:
-view_users
+view-users
 
 To manually update a user's Instagram images, enter the following command:
 update-user <instatag>

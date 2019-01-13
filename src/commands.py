@@ -55,10 +55,8 @@ class Commands(object):
     def view_users(response):
         users = Users.get_users(query=({}))
         for user in users:
-            image_count = Images.get_image_count(user)
             print("Instatag: {}".format(user.instatag))
             print("Hashtag: {}".format(user.hashtag))
-            print("Image Count: {}".format(image_count))
             print("--")
 
     @classmethod
