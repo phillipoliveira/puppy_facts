@@ -20,8 +20,6 @@ def instagram_redirect():
         return Response("It worked! Thanks!")
 
 
-@app.route('')
-
 @app.route('/puppy_facts/events', methods=['POST'])
 def events():
     event_data = json.loads(request.data.decode('utf-8'))
