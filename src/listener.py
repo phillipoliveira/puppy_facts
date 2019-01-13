@@ -9,15 +9,18 @@ import json
 
 app = Flask(__name__)
 
+
 @app.route('/puppy_facts/instagram_redirect', methods=["GET"])
 def instagram_redirect():
     if 'error' in request.args:
         return Response("It didn't work!")
     # Retrieve the auth code from the request params
     else:
-        print(request.args['code'])
+        print(request.args['access_token'])
         return Response("It worked! Thanks!")
 
+
+@app.route('')
 
 @app.route('/puppy_facts/events', methods=['POST'])
 def events():
