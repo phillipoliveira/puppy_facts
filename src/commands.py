@@ -30,7 +30,6 @@ class Commands(object):
         function_dict = {"exit": self.exit,
                          "add-user": self.add_user,
                          "view-users": self.view_users,
-                         "update-user": self.update_user,
                          "remove-user": self.remove_user,
                          "add-email": self.add_distributor,
                          "add-slack": self.add_distributor,
