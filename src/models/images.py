@@ -4,7 +4,7 @@ import requests
 from bs4 import BeautifulSoup
 import json
 import re
-from src.models.message_log import MessageLog
+from models.message_log import MessageLog
 
 
 class Images(object):
