@@ -19,19 +19,14 @@ class App(object):
         print("sending...")
         used = False
         count = 0
-        while used is False:
-            user = Users.choose_user(fact_type)
-            image = Images.get_images(user=user.instatag, hashtag=user.hashtag)
-            fact = Facts.retrieve_random_fact(user.associated_fact_type)
-            selected_attachment = SlackCommands.create_slack_attachment(
-                img=image['image_url'],
-                insta_tag=user.instatag,
-                ts=image['ts']
-            )
-            count += 1
-            if count > 100:
-                raise LookupError("NO PUPPY FACTS AVAILABLE :(")
-            used = MessageLog.used_check(fact=fact.fact_text, image=image['image_url'])
+        user = Users.choose_user(fact_type)
+        image = Images.get_images(user=user.instatag, hashtag=user.hashtag)
+        fact = Facts.retrieve_random_fact(user.associated_fact_type)
+        selected_attachment = SlackCommands.create_slack_attachment(
+            img=image['image_url'],
+            insta_tag=user.instatag,
+            ts=image['ts']
+        )
         if usage == "command":
             user.add_to_send_count()
             return {"text": fact.fact_text,
@@ -40,11 +35,11 @@ class App(object):
             for channel in channels:
                 slack_commands = SlackCommands()
                 response = slack_commands.send_message(
-                    user=user,
                     channel=channel,
                     fact=fact,
                     selected_attachment=selected_attachment
                 )
-                MessageLog.log_message(response)
+                MessageLog.log_message(response=response,
+                                       instatag=user.instatag)
             user.add_to_send_count()
             Emailer.send_email(emails, selected_attachment, fact.fact_text)

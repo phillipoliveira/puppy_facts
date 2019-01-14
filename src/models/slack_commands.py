@@ -174,7 +174,7 @@ class SlackCommands(object):
             print("Unable to authenticate.")
 
     @classmethod
-    def send_message(cls, user, channel, fact, selected_attachment):
+    def send_message(cls, channel, fact, selected_attachment):
         response = (cls.get_slack_token(team_id=channel.slack_ids['team_id']).api_call(
             "chat.postMessage",
             channel=channel.slack_ids['channel_id'],

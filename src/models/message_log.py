@@ -3,7 +3,8 @@ import uuid
 
 
 class MessageLog(object):
-    def __init__(self, channel, ts, text, image_url, _id=None):
+    def __init__(self, user, channel, ts, text, image_url, _id=None):
+        self.user = user
         self.channel = channel
         self.ts = ts
         self.text = text
@@ -18,6 +19,7 @@ class MessageLog(object):
     def json(self):
         return {
             "_id": self._id,
+            "user": self.user,
             "channel": self.channel,
             "ts": self.ts,
             "text": self.text,
@@ -32,19 +34,18 @@ class MessageLog(object):
         return [cls(**message) for message in messages]
 
     @classmethod
-    def used_check(cls, fact, image):
+    def used_check(cls, image):
         messages = cls.pull_message_log()
         for message in messages:
-            if message.text == fact:
-                return False
             if message.image_url == image:
                 return False
         return True
 
     @classmethod
-    def log_message(cls, response):
+    def log_message(cls, response, instatag):
         try:
             message = cls(
+                user=instatag,
                 channel=response['channel'],
                 ts=response['ts'],
                 text=response['message']['text'],
@@ -55,4 +56,8 @@ class MessageLog(object):
             print("This response couldn't be added to the message_log: {}".format(response))
         return
 
-
+    @staticmethod
+    def purge_message_log(instatag):
+        database = Database()
+        database.initialize()
+        database.delete_many(collection="message_log", query={"user": instatag})

@@ -4,7 +4,7 @@ import requests
 from bs4 import BeautifulSoup
 import json
 import re
-from commons.database import Database
+from src.models.message_log import MessageLog
 
 
 class Images(object):
@@ -34,7 +34,8 @@ class Images(object):
             for node in nodes:
                 image = (node['node']['thumbnail_src'])
                 ts = node['node']['taken_at_timestamp']
-                images.append({"image_url": image, "ts": ts})
+                if re.search(".jpg", image):
+                    images.append({"image_url": image, "ts": ts})
         else:
             url = "https://www.instagram.com/explore/tags/{}/".format(hashtag)
             raw_json = cls.get_scripts(url)
@@ -43,11 +44,20 @@ class Images(object):
                 if node['node']['owner']['id'] == owner_id:
                     image = node['node']['thumbnail_src']
                     ts = node['node']['taken_at_timestamp']
-                    images.append({"image_url": image, "ts": ts})
-        chosen_image = {"image_url":""}
-        while re.search(".jpg", chosen_image['image_url']) is None:
-            chosen_image = random.choice(images)
-        return chosen_image
+                    if re.search(".jpg", image):
+                        images.append({"image_url": image, "ts": ts})
+        image_count = len(images)
+        count = 0
+        for image in images:
+            count += 1
+            if MessageLog.used_check(image=image["image_url"]):
+                return image
+            elif image_count == count:
+                MessageLog.purge_message_log(instatag=user)
+                chosen_image = random.choice(images)
+                return chosen_image
+            else:
+                continue
 
 
 
