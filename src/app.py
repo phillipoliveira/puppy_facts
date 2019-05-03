@@ -38,7 +38,6 @@ class App(object):
                     fact=fact,
                     selected_attachment=selected_attachment
                 )
-                user.add_to_send_count()
                 MessageLog.log_message(response=response,
                                        instatag=user.instatag)
             user.add_to_send_count()
