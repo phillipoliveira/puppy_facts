@@ -237,7 +237,7 @@ class SlackCommands(object):
         attachment = [
             {
                 "fallback": "Puppy Facts.",
-                "color": "#36a64f",
+                "color": "#4ac3cc",
                 "author_name": "@" + insta_tag,
                 "image_url": img,
                 "ts": int(ts)
