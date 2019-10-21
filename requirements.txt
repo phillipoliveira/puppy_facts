@@ -1,7 +1,7 @@
 flask==1.0.2
 jinja2==2.10
 markupSafe==1.0
-werkzeug==0.14.1
+werkzeug==0.15.3
 certifi==2018.4.16
 chardet==3.0.4
 idna==2.7
