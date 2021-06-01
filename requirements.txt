@@ -13,5 +13,5 @@ setuptools==28.8.0
 six==1.11.0
 slackclient==1.2.1
 tqdm==4.25.0
-urllib3==1.22
+urllib3==1.26.5
 websocket-client==0.47.0
